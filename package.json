@@ -1,0 +1,29 @@
+{
+  "name": "obsidian-gym",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node esbuild.config.mjs --prod",
+    "dev": "node esbuild.config.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/artischocki/obsidian-gym.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/artischocki/obsidian-gym/issues"
+  },
+  "homepage": "https://github.com/artischocki/obsidian-gym#readme",
+  "devDependencies": {
+    "esbuild": "^0.27.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "obsidian": "^1.11.4"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "id": "gym-plugin",
+  "name": "Gym",
+  "version": "0.0.1",
+  "minAppVersion": "1.0.0",
+  "description": "Logs workouts.",
+  "author": "Artur Dernst",
+  "authorUrl": "github.com/artischocki",
+  "isDesktopOnly": false
+}
