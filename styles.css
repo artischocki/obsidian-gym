@@ -1,5 +1,5 @@
 /* ============================================================
-   Obsidian Gym — Styles
+   Obsidian Gym — Styles (mobile-first, touch-friendly)
    ============================================================ */
 
 .gym-root {
@@ -29,21 +29,28 @@
 .gym-button-row {
   display: flex;
   gap: 0.5rem;
-  margin-top: 0.5rem;
+  margin-top: 0.6rem;
   flex-wrap: wrap;
+}
+
+/* Touch-friendly default buttons inside our own UI.
+   Obsidian's own Setting controls keep their default sizing. */
+.gym-root button:not(.gym-set-done) {
+  min-height: 36px;
+  padding: 0.4rem 0.9rem;
 }
 
 /* ---------- Start-workout modal ---------- */
 
 .gym-start-modal .modal-content {
-  min-width: 380px;
+  min-width: 320px;
 }
 
 .gym-suggested {
   border: 1px solid var(--interactive-accent);
   background: var(--background-modifier-hover);
   border-radius: 8px;
-  padding: 0.75rem 1rem;
+  padding: 0.9rem 1rem;
   margin-bottom: 1rem;
 }
 
@@ -56,8 +63,9 @@
 }
 
 .gym-suggested-name {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 600;
+  margin-top: 0.15rem;
 }
 
 .gym-session-list {
@@ -66,18 +74,24 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.4rem;
 }
 
 .gym-session-list li {
   border: 1px solid var(--background-modifier-border);
-  border-radius: 6px;
-  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
   cursor: pointer;
   transition: background 100ms;
+  /* better tap feedback on mobile */
+  -webkit-tap-highlight-color: var(--background-modifier-active-hover);
 }
 
-.gym-session-list li:hover {
+.gym-session-list li:hover,
+.gym-session-list li:active {
   background: var(--background-modifier-hover);
 }
 
@@ -86,6 +100,9 @@
 .gym-workout {
   max-width: 760px;
   margin: 0 auto;
+  /* Reserve room at the bottom so the sticky timer never overlaps the
+     last exercise's controls, including iOS home-indicator. */
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
 }
 
 .gym-workout-header {
@@ -95,6 +112,8 @@
   border-bottom: 1px solid var(--background-modifier-border);
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.4rem;
 }
 
 .gym-workout-title {
@@ -110,17 +129,19 @@
 .gym-exercise-block {
   border: 1px solid var(--background-modifier-border);
   border-radius: 10px;
-  padding: 0.9rem 1rem;
+  padding: 1rem 1rem;
   margin-bottom: 0.9rem;
   background: var(--background-secondary);
 }
 
 .gym-exercise-name {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 600;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .gym-exercise-range {
@@ -129,45 +150,60 @@
   font-size: 0.85em;
 }
 
+/* The per-set row: index, weight, reps, PR mark, done-checkbox.
+   Sizes tuned for thumb targets and to avoid iOS auto-zoom on focus. */
 .gym-set-row {
   display: grid;
-  grid-template-columns: 36px 1fr 1fr 32px 28px;
+  grid-template-columns: 36px 1fr 1fr 32px 48px;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 0.4rem;
+  margin-top: 0.5rem;
+  min-height: 48px;
 }
 
-.gym-set-row input[type="number"] {
+.gym-set-row input {
   width: 100%;
-  padding: 0.3rem 0.5rem;
-  border-radius: 6px;
+  /* 16px prevents iOS Safari from zooming the page on focus. */
+  font-size: 16px;
+  padding: 0.55rem 0.6rem;
+  border-radius: 8px;
   border: 1px solid var(--background-modifier-border);
   background: var(--background-primary);
   color: var(--text-normal);
-  font-size: 0.95rem;
+  min-height: 44px;
+  /* respect numeric keyboards */
+  -moz-appearance: textfield;
+}
+.gym-set-row input::-webkit-outer-spin-button,
+.gym-set-row input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
-.gym-set-row input[type="number"]:focus {
+.gym-set-row input:focus {
   outline: 2px solid var(--interactive-accent);
+  outline-offset: -1px;
 }
 
 .gym-set-index {
   font-weight: 600;
   color: var(--text-muted);
   text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 .gym-set-done {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
   border: 1px solid var(--background-modifier-border);
   background: var(--background-primary);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 1.2rem;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .gym-set-done.gym-checked {
@@ -177,34 +213,45 @@
 }
 
 .gym-set-pr {
-  font-size: 1rem;
+  font-size: 1.1rem;
+  text-align: center;
 }
 
 .gym-prev-hint {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--text-faint);
-  margin-top: 2px;
-  margin-left: 44px;
+  margin-top: 0.5rem;
+  margin-left: 0;
 }
 
+/* Sticky rest-timer pinned to the bottom of the viewport (clear of safe areas). */
 .gym-rest-timer {
   position: sticky;
-  bottom: 0;
+  bottom: env(safe-area-inset-bottom, 0px);
   background: var(--background-primary);
   border-top: 1px solid var(--background-modifier-border);
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1rem calc(0.6rem + env(safe-area-inset-bottom, 0px));
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: 0.95rem;
-  margin-top: 1rem;
+  margin: 1rem -1.25rem 0;
+  gap: 0.75rem;
+  /* Sits above the workout content. */
+  z-index: 20;
+}
+
+/* Hide the rest timer entirely when no timer is active to keep the
+   workout scrolling experience clean on small screens. */
+.gym-rest-timer.gym-rest-idle {
+  display: none;
 }
 
 .gym-timer-running {
   color: var(--interactive-accent);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
 }
 
 .gym-finish-row {
@@ -212,6 +259,12 @@
   justify-content: flex-end;
   gap: 0.5rem;
   margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.gym-finish-row button {
+  min-height: 44px;
+  padding: 0.5rem 1.2rem;
 }
 
 /* ---------- Progress dashboard ---------- */
@@ -219,6 +272,7 @@
 .gym-dashboard {
   max-width: 980px;
   margin: 0 auto;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .gym-section {
@@ -227,14 +281,14 @@
 
 .gym-pr-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 0.6rem;
 }
 
 .gym-pr-card {
   border: 1px solid var(--background-modifier-border);
   border-radius: 8px;
-  padding: 0.6rem 0.8rem;
+  padding: 0.7rem 0.9rem;
   background: var(--background-secondary);
 }
 
@@ -244,15 +298,17 @@
 }
 
 .gym-pr-value {
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--interactive-accent);
   font-variant-numeric: tabular-nums;
+  margin-top: 0.15rem;
 }
 
 .gym-pr-date {
   font-size: 0.75rem;
   color: var(--text-muted);
+  margin-top: 0.15rem;
 }
 
 .gym-chart-wrap {
@@ -295,17 +351,26 @@
   font-size: 10px;
 }
 
+/* The heatmap can overflow on narrow phones — let it scroll horizontally
+   instead of squashing the cells. */
+.gym-heatmap-scroll {
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  /* iOS momentum scroll */
+  -webkit-overflow-scrolling: touch;
+}
+
 .gym-heatmap {
   display: grid;
-  grid-template-rows: repeat(7, 12px);
+  grid-template-rows: repeat(7, 14px);
   grid-auto-flow: column;
-  grid-auto-columns: 12px;
+  grid-auto-columns: 14px;
   gap: 2px;
 }
 
 .gym-heatmap-cell {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 2px;
   background: var(--background-modifier-border);
 }
@@ -324,8 +389,34 @@
   align-items: center;
 }
 
+.gym-heatmap-legend .gym-heatmap-cell {
+  display: inline-block;
+}
+
 .gym-empty {
   color: var(--text-muted);
   font-style: italic;
   padding: 0.5rem 0;
+}
+
+/* ---------- Narrow-screen overrides ---------- */
+@media (max-width: 480px) {
+  .gym-root {
+    padding: 0.75rem 0.85rem;
+  }
+  .gym-workout-title {
+    font-size: 1.25rem;
+  }
+  /* On very narrow phones, drop the PR-mark column to give inputs more room. */
+  .gym-set-row {
+    grid-template-columns: 32px 1fr 1fr 28px 48px;
+    gap: 0.4rem;
+  }
+  .gym-set-pr {
+    font-size: 0.95rem;
+  }
+  .gym-rest-timer {
+    margin-left: -0.85rem;
+    margin-right: -0.85rem;
+  }
 }

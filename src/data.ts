@@ -364,3 +364,20 @@ export function todayIso(): string {
   const da = String(d.getDate()).padStart(2, "0");
   return `${y}-${mo}-${da}`;
 }
+
+/**
+ * Parse a number string that may use either comma or dot as decimal
+ * separator (German keyboards default to comma). Returns 0 for invalid input.
+ */
+export function parseLocaleNumber(raw: string): number {
+  if (!raw) return 0;
+  const cleaned = raw.replace(/[^\d,.\-]/g, "").replace(",", ".");
+  const n = parseFloat(cleaned);
+  return isNaN(n) ? 0 : n;
+}
+
+/** Format a weight value with a German decimal comma (e.g. 82.5 → "82,5"). */
+export function formatWeight(weight: number): string {
+  if (!Number.isFinite(weight)) return "";
+  return Number.isInteger(weight) ? String(weight) : String(weight).replace(".", ",");
+}

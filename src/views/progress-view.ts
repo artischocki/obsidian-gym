@@ -108,7 +108,8 @@ export class ProgressView extends ItemView {
       countByDay.set(key, (countByDay.get(key) ?? 0) + 1);
     }
 
-    const grid = section.createDiv({ cls: "gym-heatmap" });
+    const scrollWrap = section.createDiv({ cls: "gym-heatmap-scroll" });
+    const grid = scrollWrap.createDiv({ cls: "gym-heatmap" });
     const cursor = new Date(setStart);
     const totalCells = days + ((7 - ((days + dow) % 7)) % 7);
     for (let i = 0; i < totalCells; i++) {

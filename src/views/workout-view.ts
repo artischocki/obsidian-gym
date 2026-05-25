@@ -1,5 +1,5 @@
 import { ItemView, Notice, WorkspaceLeaf } from "obsidian";
-import { GymStore, formatDate, todayIso } from "../data";
+import { GymStore, formatDate, formatWeight, parseLocaleNumber, todayIso } from "../data";
 import {
   Exercise,
   GymData,
@@ -152,7 +152,7 @@ export class WorkoutView extends ItemView {
     // "Last time" hint
     if (e.prevSets.length > 0) {
       const hint = e.prevSets
-        .map((s) => `${s.weight}${this.settings.weightUnit}×${s.reps}`)
+        .map((s) => `${formatWeight(s.weight)}${this.settings.weightUnit}×${s.reps}`)
         .join(", ");
       block.createDiv({ cls: "gym-prev-hint", text: `Letztes Mal: ${hint}` });
     }
@@ -182,21 +182,28 @@ export class WorkoutView extends ItemView {
     const row = parent.createDiv({ cls: "gym-set-row" });
     row.createSpan({ cls: "gym-set-index", text: String(si + 1) });
 
-    const weightInput = row.createEl("input", { type: "number" });
-    weightInput.placeholder = `weight (${this.settings.weightUnit})`;
-    weightInput.step = "0.5";
-    weightInput.min = "0";
-    if (s.weight > 0) weightInput.value = String(s.weight);
+    // Text-with-inputmode rather than type="number":
+    //   - lets the user type a decimal comma on de-DE keyboards (which
+    //     <input type=number> would silently discard)
+    //   - still surfaces the numeric keypad on iOS/Android via inputmode
+    const weightInput = row.createEl("input", { type: "text" });
+    weightInput.inputMode = "decimal";
+    weightInput.setAttr("autocomplete", "off");
+    weightInput.setAttr("autocapitalize", "off");
+    weightInput.placeholder = this.settings.weightUnit;
+    if (s.weight > 0) weightInput.value = formatWeight(s.weight);
     weightInput.addEventListener("input", () => {
-      s.weight = parseFloat(weightInput.value) || 0;
+      s.weight = parseLocaleNumber(weightInput.value);
     });
 
-    const repsInput = row.createEl("input", { type: "number" });
-    repsInput.placeholder = "reps";
-    repsInput.min = "0";
+    const repsInput = row.createEl("input", { type: "text" });
+    repsInput.inputMode = "numeric";
+    repsInput.setAttr("autocomplete", "off");
+    repsInput.placeholder = "Reps";
     if (s.reps > 0) repsInput.value = String(s.reps);
     repsInput.addEventListener("input", () => {
-      s.reps = parseInt(repsInput.value) || 0;
+      const n = parseInt(repsInput.value.replace(/[^\d-]/g, ""));
+      s.reps = isNaN(n) ? 0 : n;
     });
 
     // PR indicator (live)
@@ -236,12 +243,14 @@ export class WorkoutView extends ItemView {
   // ---------- rest timer ----------
 
   private renderRestTimerBar(parent: HTMLElement): void {
-    const bar = parent.createDiv({ cls: "gym-rest-timer" });
-    const label = bar.createSpan({ text: "Pause" });
+    const bar = parent.createDiv({ cls: "gym-rest-timer gym-rest-idle" });
+    bar.createSpan({ text: "Pause" });
     const timerEl = bar.createSpan({ cls: "gym-timer-running", text: "—" });
 
     const updateUI = (): void => {
-      if (this.restInterval === null) {
+      const idle = this.restInterval === null;
+      bar.toggleClass("gym-rest-idle", idle);
+      if (idle) {
         timerEl.setText("—");
         return;
       }
@@ -255,7 +264,7 @@ export class WorkoutView extends ItemView {
       }
     };
 
-    const skip = bar.createEl("button", { text: "Skip" });
+    const skip = bar.createEl("button", { text: "Überspringen" });
     skip.addEventListener("click", () => this.stopRestTimer());
 
     // Re-pin the timer UI to this DOM element on each render
