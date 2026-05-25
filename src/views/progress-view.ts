@@ -1,5 +1,5 @@
 import { ItemView, WorkspaceLeaf } from "obsidian";
-import { GymStore } from "../data";
+import { GymStore, formatDate } from "../data";
 import { GymData, GymSettings, PROGRESS_VIEW_TYPE, Workout } from "../types";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -83,7 +83,7 @@ export class ProgressView extends ItemView {
         cls: "gym-pr-value",
         text: `${pr.weight}${this.settings.weightUnit} × ${pr.reps}`,
       });
-      card.createDiv({ cls: "gym-pr-date", text: pr.date });
+      card.createDiv({ cls: "gym-pr-date", text: formatDate(pr.date) });
     }
   }
 
@@ -119,7 +119,10 @@ export class ProgressView extends ItemView {
       else if (count === 3) cell.addClass("gym-h3");
       else if (count === 2) cell.addClass("gym-h2");
       else if (count === 1) cell.addClass("gym-h1");
-      cell.setAttr("title", `${key}: ${count} Workout${count === 1 ? "" : "s"}`);
+      cell.setAttr(
+        "title",
+        `${formatDate(key)}: ${count} Workout${count === 1 ? "" : "s"}`,
+      );
       cursor.setDate(cursor.getDate() + 1);
     }
 
@@ -193,7 +196,7 @@ export class ProgressView extends ItemView {
         cls: "gym-muted",
         text:
           points.length === 1
-            ? `${points[0].maxWeight}${this.settings.weightUnit} am ${points[0].date}`
+            ? `${points[0].maxWeight}${this.settings.weightUnit} am ${formatDate(points[0].date)}`
             : "Noch nicht genug Daten",
       });
       return;
@@ -262,7 +265,7 @@ export class ProgressView extends ItemView {
       dot.setAttribute("r", "2.5");
       dot.addClass("gym-chart-point");
       const tt = document.createElementNS(SVG_NS, "title");
-      tt.textContent = `${p.date}: ${p.maxWeight}${this.settings.weightUnit}`;
+      tt.textContent = `${formatDate(p.date)}: ${p.maxWeight}${this.settings.weightUnit}`;
       dot.appendChild(tt);
       svg.appendChild(dot);
     }

@@ -1,5 +1,5 @@
 import { ItemView, Notice, WorkspaceLeaf } from "obsidian";
-import { GymStore } from "../data";
+import { GymStore, formatDate, todayIso } from "../data";
 import {
   Exercise,
   GymData,
@@ -124,7 +124,7 @@ export class WorkoutView extends ItemView {
     const header = root.createDiv({ cls: "gym-workout-header" });
     header.createDiv({ cls: "gym-workout-title", text: this.session.name });
     const meta = header.createDiv({ cls: "gym-workout-meta" });
-    meta.setText(`${this.plan.name} • ${new Date().toLocaleDateString()}`);
+    meta.setText(`${this.plan.name} • ${formatDate(todayIso())}`);
 
     for (let ei = 0; ei < this.exercises.length; ei++) {
       this.renderExercise(root, ei);
@@ -323,7 +323,7 @@ export class WorkoutView extends ItemView {
 
     const durationSeconds = Math.round((Date.now() - this.workoutStartedAt) / 1000);
     const file = await this.store.saveWorkout({
-      date: new Date().toISOString().slice(0, 10),
+      date: todayIso(),
       plan: this.plan.name,
       session: this.session.name,
       sets,

@@ -223,7 +223,7 @@ export class GymStore {
       })),
     };
     const body =
-      `# ${workout.session} — ${workout.date}\n\n` +
+      `# ${workout.session} — ${formatDate(workout.date)}\n\n` +
       (workout.notes ? workout.notes + "\n" : "") +
       this.workoutMarkdownTable(workout.sets);
     return this.writeFile(path, fm, body);
@@ -344,4 +344,23 @@ function asStringArray(v: unknown): string[] {
 
 function sanitize(name: string): string {
   return name.replace(/[\\/:*?"<>|]/g, "_").trim();
+}
+
+/**
+ * Format an ISO date string (YYYY-MM-DD) as German DD.MM.YYYY.
+ * Storage stays ISO for sortability; this is purely for display.
+ */
+export function formatDate(iso: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+  if (!m) return iso;
+  return `${m[3]}.${m[2]}.${m[1]}`;
+}
+
+/** Today as ISO YYYY-MM-DD, respecting local timezone. */
+export function todayIso(): string {
+  const d = new Date();
+  const y = d.getFullYear();
+  const mo = String(d.getMonth() + 1).padStart(2, "0");
+  const da = String(d.getDate()).padStart(2, "0");
+  return `${y}-${mo}-${da}`;
 }
