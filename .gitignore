@@ -1,0 +1,13 @@
+node_modules/
+.DS_Store
+
+# Build artifacts (committed for distribution, but ignore intermediate)
+*.js.map
+
+# IDE
+.vscode/
+.idea/
+
+# Local Obsidian junk
+.obsidian/
+data.json

@@ -1,0 +1,9 @@
+{
+  "id": "obsidian-gym",
+  "name": "Gym",
+  "version": "0.1.0",
+  "minAppVersion": "1.4.0",
+  "description": "Plan workouts, track progress, and crush personal records — all from Obsidian.",
+  "author": "Artur Dernst",
+  "isDesktopOnly": false
+}
